@@ -43,6 +43,8 @@
 		
 		<!-- 
 			无偿分享 简单易用 贝茨训练法 调节睫状肌 近视恢复训练
+			
+			2024-07-27新增功能：键盘空格（点击屏幕）：暂停/继续，键盘↑（向上滑动）：加速，键盘↓（向下滑动）：减速。
 
             1. 项目背景： 贝茨训练法（Bates training method），是1885年由美国眼科医生贝茨发明，通过调节眼球晶状体改变形状来完成的。
                 本项目将贝茨训练法以网页的方式呈现，希望能够帮助近视的朋友恢复视力。 
@@ -50,7 +52,7 @@
                 当前本项目所有内容均由我个人独自完成，不存在任何版权争议。
                 哔哩哔哩观看网址：https://m.bilibili.com/video/BV1dv4y1g76J
                 源码网址：https://gitee.com/penghaifu/penghaifu
-                观看网址：http://penghaifu.gitee.io
+                观看网址：https://penghaifu.github.io/penghaifu/
             2. 项目简介：
                 近视眼福音，贝茨训练法视力恢复训练，网页版今已上线
                 连续观看3个月，就能降低150~300度
@@ -66,7 +68,7 @@
                 手机端：右上角设置-播放方式-单集循环（开启）
             5. 原网址观看备注：
                 视频上传到哔哩哔哩，画质和帧数都被降低了，所以看起来不太流程也比较糊
-                前往原网址： http://penghaifu.gitee.io/ 观看帧数高画质清晰
+                前往原网址： https://penghaifu.github.io/penghaifu/ 观看帧数高画质清晰
                 分辨率越高的屏幕看起来越逼真（所以有时候手机上看不失为一种好的选择，虽然手机屏幕小，但是手机的分辨率普遍比电脑高。）
                 帧数越高的屏幕看起来越流畅
             6. PC浏览器备注：
@@ -79,13 +81,55 @@
                 祝您使用愉快，早日摘掉眼镜
                 喜欢本视频的小伙伴请分享给身边近视的朋友，让更多人知道
                 作者：友善的穿山甲兄弟
-				
+			
+			
+			
+			Free sharing of simple and easy-to-use Bates training method to regulate ciliary muscle myopia recovery training
+ 
+			New features added on July 27, 2024: Keyboard Space (Click Screen): Pause/Continue, Keyboard ↑ (Slide Up): Accelerate, Keyboard ↓ (Slide Down): Decelerate.
+			1. Project background: The Bates training method, invented by American ophthalmologist Bates in 1885, is achieved by adjusting the shape of the eye lens.
+			This project presents the Bates training method in the form of a webpage, hoping to help myopic friends restore their vision.
+			All resources released in this project are limited to learning and research purposes only; The above content shall not be used for commercial or illegal purposes, otherwise, all consequences shall be borne by yourself.
+			All the content of this project is currently completed solely by me, and there are no copyright disputes.
+			Bilibili viewing website: https://m.bilibili.com/video/BV1dv4y1g76J
+			Source code URL: https://gitee.com/penghaifu/penghaifu
+			Viewing URL: https://penghaifu.github.io/penghaifu/
+			2. Project Overview:
+			Myopia gospel, Bates training method vision recovery training, web version now available online
+			Watching continuously for 3 months can reduce the temperature by 150-300 degrees
+			free non-toxic!!! Effective!!!
+			If you feel uncomfortable, please pause watching immediately!!!
+			Take off your glasses and look!!!
+			Play music and enjoy a beautiful life to the fullest
+			3. Viewing distance note:
+			Just be able to see clearly when the circle is at its maximum.
+			4. Bilibili viewing notes:
+			Need to enable loop playback, otherwise it will be gone in one go
+			Computer end: Settings in the bottom right corner - Brainwashing cycle (enabled)
+			Mobile end: Settings in the upper right corner - Play mode - Single episode loop (enabled)
+			5. Original URL viewing notes:
+			When uploading the video to Bilibili, both the image quality and frame rate have been reduced, so it doesn't look very smooth and confusing
+			Go to the original website: https://penghaifu.github.io/penghaifu/ High viewing frame rate, clear picture quality
+			The higher the resolution of the screen, the more realistic it looks (so sometimes it can be a good choice to watch on a mobile phone, although the screen is small, the resolution of the phone is generally higher than that of a computer.)
+			A screen with higher frame rates appears smoother
+			6. PC browser notes:
+			Press F11 to enter full screen mode for a more realistic effect.
+			Page deformation can refresh the webpage, and PC browsers can use F5 to refresh
+			Enabling hardware acceleration in the browser will make animations smoother (unclear on Baidu)
+			Not currently supported for browsers below IE10
+			7. Finally:
+			If you have any opinions or suggestions, please leave a message below
+			Wishing you a pleasant use and taking off your glasses soon
+			If you like this video, please share it with friends who are nearsighted around you, so that more people can know
+			Author: Friendly Pangolin Brothers
 			-->
 		
 		<div id="globe" style="width: 1px;height: 1px;transform:scale(0);-ms-transform:scale(0);-webkit-transform:scale(0);" onclick="window.location.href='https://www.bilibili.com/video/BV1ni4y1f7UG';"></div>
 		
 	</body>
 	<script>
+		alert("键盘空格（点击屏幕）：暂停/继续，键盘↑（向上滑动）：加速，键盘↓（向下滑动）：减速。");
+		
 		/* 屏幕 begin */
 		var WINDOW_WIDTH = null; // 屏幕宽度
 		var WINDOW_HEIGHT = null; // 屏幕高度
@@ -104,20 +148,112 @@
 		/* 球体 begin */
 		var GLOBE_MAX_WIDTH = null; // 球体最大宽度 = 屏幕宽度和屏幕高度小的一方
 		var GLOBE_OBJ = null; // 球体对象
-		var GLOBE_CHANGE_TOTAL_TIME = null; // 球体变化总时长5秒
-		var GLOBE_CHANGE_TIME_INTERVAL = null; // 每次球体变化的时间间隔
+		var GLOBE_CHANGE_TOTAL_TIME = 3000; // 球体变化总时长（毫秒）
+		var GLOBE_CHANGE_TIME_INTERVAL = 5; // 每次修改间隔时间（毫秒）
 		var GLOBE_CHANGE_WIDTH = null; // 球体每次变化的宽度 = 球体最大宽度 ÷ (总时长 ÷ 每次修改间隔时间)
 		var GLOBE_TO_MAX_CHANGE_WIDTH_ARRY = null; // 球体变大时，每次变化的宽度数据数组
 		var INTERVAL_ID = null; // 循环定时器ID
 		var IS_STOP = false; // 是否暂停
+		var START_COORDINATE_Y = 0; // 开始Y轴坐标
 		/* 球体 end */
 		
+		/* 事件绑定 begin */
 		window.setTimeout(initPage, 10); // 10毫秒后开始初始化
+		// 页面大小改变自动重置页面
+		window.onresize = function() {
+			initPage();
+		}
+		
+		// 按下回车触发
+		document.onkeydown = function() {
+			if(event.keyCode == 32) {
+				// 按下空格触发，切换球体状态
+				switchGlobeStatus();
+			}
+			if(event.keyCode == 40) {
+				// 按下↓触发，加速球体
+				GLOBE_CHANGE_TOTAL_TIME = GLOBE_CHANGE_TOTAL_TIME + 500;
+				if (GLOBE_CHANGE_TOTAL_TIME < 500) {
+					GLOBE_CHANGE_TOTAL_TIME = 500;
+				}
+				initPage();
+			}
+			if(event.keyCode == 38) {
+				// 按下↑触发，减速球体
+				GLOBE_CHANGE_TOTAL_TIME = GLOBE_CHANGE_TOTAL_TIME - 500;
+				initPage();
+			}
+			return true;  
+		};
+		
+		
+		// 按下鼠标事件
+		document.body.addEventListener('mousedown', function (event) {
+			// 记录当前鼠标Y轴坐标
+			START_COORDINATE_Y = event.clientY;
+		});
+
+		// 抬起鼠标事件
+		document.body.addEventListener('mouseup', function (event) {
+			// 计算鼠标当前Y轴坐标和上一次Y轴坐标之间的差
+			var deltaY = event.clientY - START_COORDINATE_Y;
+
+			if (Math.abs(deltaY) < 20) {
+				// 移动距离少于20，作为误触控不做任何操作。
+			} else if (deltaY > 0) {
+				// 向下滑动，减速球体
+				GLOBE_CHANGE_TOTAL_TIME = GLOBE_CHANGE_TOTAL_TIME + 500;
+				if (GLOBE_CHANGE_TOTAL_TIME < 500) {
+					GLOBE_CHANGE_TOTAL_TIME = 500;
+				}
+				initPage();
+			} else if (deltaY < 0) {
+				// 向上滑动，加速球体
+				GLOBE_CHANGE_TOTAL_TIME = GLOBE_CHANGE_TOTAL_TIME - 500;
+				initPage();
+			}
+			START_COORDINATE_Y = 0;
+		});
+
+		// 按下鼠标事件：处理触摸设备
+		document.body.addEventListener('touchstart', function (event) {
+			// 记录当前鼠标Y轴坐标
+			START_COORDINATE_Y = event.touches[0].clientY;
+		});
+
+		// 抬起鼠标事件：处理触摸设备
+		document.body.addEventListener('touchend', function (event) {
+			var deltaY = event.touches[0].clientY - START_COORDINATE_Y;
+
+			if (Math.abs(deltaY) < 20) {
+				// 移动距离少于20，作为误触控不做任何操作。
+			} else if (deltaY > 0) {
+				// 向下滑动，减速球体
+				GLOBE_CHANGE_TOTAL_TIME = GLOBE_CHANGE_TOTAL_TIME + 500;
+				if (GLOBE_CHANGE_TOTAL_TIME < 500) {
+					GLOBE_CHANGE_TOTAL_TIME = 500;
+				}
+				initPage();
+			} else if (deltaY < 0) {
+				// 向上滑动，加速球体
+				GLOBE_CHANGE_TOTAL_TIME = GLOBE_CHANGE_TOTAL_TIME - 500;
+				initPage();
+			}
+			START_COORDINATE_Y = 0;
+		});
+		/* 事件绑定 end */
 		
 		/**
 		 * 初始化页面（重置）
 		 */
 		function initPage() {
+			// 记录初始化页面、还原页面
+			if (!BODY_INIT_HTML) {
+				BODY_INIT_HTML = document.body.innerHTML; // 记录初始<body>标签html内容
+			} else {
+				document.body.innerHTML = BODY_INIT_HTML; // 还原初始<body>标签html内容
+			}
+			
 			/* 屏幕 begin */
 			WINDOW_WIDTH = document.body.clientWidth; // 屏幕宽度
 			WINDOW_HEIGHT = document.body.clientHeight; // 屏幕高度
@@ -134,18 +270,10 @@
 			GLOBE_OBJ = document.getElementById('globe'); // 球体对象
 			GLOBE_OBJ.style.width = GLOBE_MAX_WIDTH+'px'; // 初始化球体宽度
 			GLOBE_OBJ.style.height = GLOBE_MAX_WIDTH+'px'; // 初始化球体高度
-			GLOBE_CHANGE_TOTAL_TIME = 5000; // 球体变化总时长（毫秒）
-			GLOBE_CHANGE_TIME_INTERVAL = 7; // 每次修改间隔时间（毫秒）
 			GLOBE_CHANGE_WIDTH = GLOBE_MAX_WIDTH / (GLOBE_CHANGE_TOTAL_TIME / GLOBE_CHANGE_TIME_INTERVAL); // 球体每次变化的宽度 = 球体最大宽度 ÷ (总时长 ÷ 每次修改间隔时间)
 			GLOBE_TO_MAX_CHANGE_WIDTH_ARRY = null; // 球体变大时，每次变化的宽度数据数组
+			START_COORDINATE_Y = 0; // 开始Y轴坐标
 			/* 球体 end */
-			
-			// 初始化页面、还原页面
-			if (!BODY_INIT_HTML) {
-				BODY_INIT_HTML = document.body.innerHTML; // 记录初始<body>标签html内容
-			} else {
-				document.body.innerHTML = BODY_INIT_HTML; // 还原初始<body>标签html内容
-			}
 			
 			// 清理循环定时器
 			if (INTERVAL_ID != null) {
@@ -161,21 +289,6 @@
 			
 			// 球体变大
 			globeToMax();
-			
-			// 页面大小改变自动重置页面
-			window.onresize = function() {
-				initPage();
-			}
-			
-			// 按下回车触发
-			document.onkeydown = function() {    
-				console.log(event);
-				if(event.keyCode == 32) {
-					// 切换球体状态
-					switchGlobeStatus();
-				}
-				return true;  
-			};
 		}
 		
 		/**
@@ -233,7 +346,6 @@
 			var this_globe_change_width = 0;
 			// 运行时间
 			var run_time = 0;
-			
 			
 			var index = 0;
 			while (true) {
@@ -336,7 +448,7 @@
 		 * 切换球体状态
 		 */
 		function switchGlobeStatus() {
-			if (IS_STOP) {
+			if (IS_STOP != false) {
 				IS_STOP = false;
 			} else {
 				IS_STOP = true;
