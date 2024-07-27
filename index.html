@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html onclick="switchGlobeStatus();">
+	<head>
+		<meta charset="utf-8">
+		<title>贝茨训练法</title>
+        <meta name="baidu-site-verification" content="code-use1xIazoi" />
+		<style>
+			* {
+				padding: 0;
+				margin: 0;
+				overflow: hidden;
+				overflow-x: hidden;
+				overflow-y: hidden;
+			}
+			html,body {
+				position: relative;
+				width: 100%;
+				height: 100%;
+				background-color: #8d6262; /* 背景颜色 */
+			}
+			div {
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				margin: auto;
+				box-sizing: border-box;
+				z-index: 1;
+				border-radius: 10px;
+				border-width: 0;
+				border-style: solid;
+				border-color: #393232; /* 网格颜色 */
+			}
+			#globe {
+				background-color: #ed8d8d; /* 球颜色 */
+				border-radius: 50%;
+				z-index: 999;
+			}
+		</style>
+	</head>
+	<body>
+		
+		<!-- 
+			无偿分享 简单易用 贝茨训练法 调节睫状肌 近视恢复训练
+
+            1. 项目背景： 贝茨训练法（Bates training method），是1885年由美国眼科医生贝茨发明，通过调节眼球晶状体改变形状来完成的。
+                本项目将贝茨训练法以网页的方式呈现，希望能够帮助近视的朋友恢复视力。 
+                本项目所发布的一切资源仅限用于学习和研究目的；不得将上述内容用于商业或者非法用途，否则，一切后果请自负。
+                当前本项目所有内容均由我个人独自完成，不存在任何版权争议。
+                哔哩哔哩观看网址：https://m.bilibili.com/video/BV1dv4y1g76J
+                源码网址：https://gitee.com/penghaifu/penghaifu
+                观看网址：http://penghaifu.gitee.io
+            2. 项目简介：
+                近视眼福音，贝茨训练法视力恢复训练，网页版今已上线
+                连续观看3个月，就能降低150~300度
+                免费！！！无毒！！！有效！！！
+                如有不适请立即暂停观看！！！
+                摘掉眼镜看！！！
+                放着音乐看，尽享美好生活
+            3. 观看距离备注：
+                圆圈最大时自己刚好能够看清即可。
+            4. 哔哩哔哩观看备注：
+                需要开启循环播放，不然一下就没了
+                电脑端：右下角设置-洗脑循环（开启）
+                手机端：右上角设置-播放方式-单集循环（开启）
+            5. 原网址观看备注：
+                视频上传到哔哩哔哩，画质和帧数都被降低了，所以看起来不太流程也比较糊
+                前往原网址： http://penghaifu.gitee.io/ 观看帧数高画质清晰
+                分辨率越高的屏幕看起来越逼真（所以有时候手机上看不失为一种好的选择，虽然手机屏幕小，但是手机的分辨率普遍比电脑高。）
+                帧数越高的屏幕看起来越流畅
+            6. PC浏览器备注：
+                按F11进入全屏模式，效果更逼真。
+                页面变形可以刷新一下网页，电脑PC端浏览器可以使用F5刷新
+                开启浏览器的硬件加速会使动画更流畅（不清楚的百度）
+                暂不支持IE10以下的浏览器
+            7. 最后：
+                有任何意见或者建议可在下方留言
+                祝您使用愉快，早日摘掉眼镜
+                喜欢本视频的小伙伴请分享给身边近视的朋友，让更多人知道
+                作者：友善的穿山甲兄弟
+				
+			-->
+		
+		<div id="globe" style="width: 1px;height: 1px;transform:scale(0);-ms-transform:scale(0);-webkit-transform:scale(0);" onclick="window.location.href='https://www.bilibili.com/video/BV1ni4y1f7UG';"></div>
+		
+	</body>
+	<script>
+		/* 屏幕 begin */
+		var WINDOW_WIDTH = null; // 屏幕宽度
+		var WINDOW_HEIGHT = null; // 屏幕高度
+		var BODY_INIT_HTML = null; // 初始<body>标签html内容
+		/* 屏幕 end */
+		
+		/* 空间视觉 begin */
+		var WINDOW_WIDTH_RATIO = null; // 屏幕宽度比值
+		var WINDOW_HEIGHT_RATIO = null; // 屏幕高度比值
+		var GRID_WIDTH_INIT = 8; // 初始化网格宽度
+		var GRID_GAP_WIDTH_INIT = 4; // 初始化网格间隙宽度
+		var GRID_GAP_ADD_WIDTH_INIT = 1; // 初始化网格间隙增加宽度
+		var GRID_BORDER_WIDTH_INIT = 2; // 初始化网格边框宽度
+		/* 空间视觉 end */
+		
+		/* 球体 begin */
+		var GLOBE_MAX_WIDTH = null; // 球体最大宽度 = 屏幕宽度和屏幕高度小的一方
+		var GLOBE_OBJ = null; // 球体对象
+		var GLOBE_CHANGE_TOTAL_TIME = null; // 球体变化总时长5秒
+		var GLOBE_CHANGE_TIME_INTERVAL = null; // 每次球体变化的时间间隔
+		var GLOBE_CHANGE_WIDTH = null; // 球体每次变化的宽度 = 球体最大宽度 ÷ (总时长 ÷ 每次修改间隔时间)
+		var GLOBE_TO_MAX_CHANGE_WIDTH_ARRY = null; // 球体变大时，每次变化的宽度数据数组
+		var INTERVAL_ID = null; // 循环定时器ID
+		var IS_STOP = false; // 是否暂停
+		/* 球体 end */
+		
+		window.setTimeout(initPage, 10); // 10毫秒后开始初始化
+		
+		/**
+		 * 初始化页面（重置）
+		 */
+		function initPage() {
+			/* 屏幕 begin */
+			WINDOW_WIDTH = document.body.clientWidth; // 屏幕宽度
+			WINDOW_HEIGHT = document.body.clientHeight; // 屏幕高度
+			/* 屏幕 end */
+			
+			/* 空间视觉 begin */
+			WINDOW_WIDTH_RATIO = WINDOW_WIDTH > WINDOW_HEIGHT ? 1 : WINDOW_WIDTH / WINDOW_HEIGHT; // 宽度比值
+			WINDOW_HEIGHT_RATIO = WINDOW_HEIGHT > WINDOW_WIDTH ? 1 : WINDOW_HEIGHT / WINDOW_WIDTH; // 高度比值
+			/* 空间视觉 end */
+			
+			/* 球体 begin */
+			GLOBE_MAX_WIDTH = WINDOW_WIDTH > WINDOW_HEIGHT ? WINDOW_HEIGHT : WINDOW_WIDTH; /// 球体最大宽度 = 屏幕宽度和屏幕高度小的一方
+			GLOBE_MAX_WIDTH = GLOBE_MAX_WIDTH * 0.40;
+			GLOBE_OBJ = document.getElementById('globe'); // 球体对象
+			GLOBE_OBJ.style.width = GLOBE_MAX_WIDTH+'px'; // 初始化球体宽度
+			GLOBE_OBJ.style.height = GLOBE_MAX_WIDTH+'px'; // 初始化球体高度
+			GLOBE_CHANGE_TOTAL_TIME = 5000; // 球体变化总时长（毫秒）
+			GLOBE_CHANGE_TIME_INTERVAL = 7; // 每次修改间隔时间（毫秒）
+			GLOBE_CHANGE_WIDTH = GLOBE_MAX_WIDTH / (GLOBE_CHANGE_TOTAL_TIME / GLOBE_CHANGE_TIME_INTERVAL); // 球体每次变化的宽度 = 球体最大宽度 ÷ (总时长 ÷ 每次修改间隔时间)
+			GLOBE_TO_MAX_CHANGE_WIDTH_ARRY = null; // 球体变大时，每次变化的宽度数据数组
+			/* 球体 end */
+			
+			// 初始化页面、还原页面
+			if (!BODY_INIT_HTML) {
+				BODY_INIT_HTML = document.body.innerHTML; // 记录初始<body>标签html内容
+			} else {
+				document.body.innerHTML = BODY_INIT_HTML; // 还原初始<body>标签html内容
+			}
+			
+			// 清理循环定时器
+			if (INTERVAL_ID != null) {
+				window.clearInterval(INTERVAL_ID);
+				INTERVAL_ID = null;
+			}
+			
+			// 初始化空间视觉
+			initSpatialVision();
+			
+			// 初始化球体变大
+			initImgglobeToMaxChangeWidthArry();
+			
+			// 球体变大
+			globeToMax();
+			
+			// 页面大小改变自动重置页面
+			window.onresize = function() {
+				initPage();
+			}
+			
+			// 按下回车触发
+			document.onkeydown = function() {    
+				console.log(event);
+				if(event.keyCode == 32) {
+					// 切换球体状态
+					switchGlobeStatus();
+				}
+				return true;  
+			};
+		}
+		
+		/**
+		 * 初始化空间视觉
+		 */
+		function initSpatialVision() {
+			var grid_width = GRID_WIDTH_INIT; // 初始网格宽度
+			var grid_gap_width = GRID_GAP_WIDTH_INIT; // 初始网格边距
+			while (true) {
+				var div_obj = document.createElement('div'); // 创建一个新的<div>标签
+				var this_grid_height = grid_width * WINDOW_HEIGHT_RATIO; // 本次网格高度
+				var this_grid_width = grid_width * WINDOW_WIDTH_RATIO; // 本次网格宽度
+				var this_top_bottom_border_width = GRID_BORDER_WIDTH_INIT; // 本次上下网格边框宽度
+				var this_left_border_width = GRID_BORDER_WIDTH_INIT; // 本次左网格边框宽度
+				var this_right_border_width = GRID_BORDER_WIDTH_INIT; // 本次右网格边框宽度
+				
+				
+				if (this_grid_height > WINDOW_HEIGHT) { // 如果网格高度超过屏幕高度
+					// (屏幕高度 - 本次网格高度 + (本次上下网格边框宽度 * 2) ) / 2
+					this_top_bottom_border_width = (WINDOW_HEIGHT - this_grid_height + (this_top_bottom_border_width * 2)) / 2; // 上下网格变窄，减少的宽度是超出的宽度 除以二
+				}
+				if (this_grid_width > WINDOW_WIDTH) { // 如果网格宽度超过屏幕宽度
+					// 本次左网格边框宽度 = (屏幕宽度 - 本次网格宽度 + (本次左网格边框宽度 * 2) ) / 2
+					this_left_border_width = (WINDOW_WIDTH - this_grid_width + (this_left_border_width * 2)) / 2; // 左网格变窄，减少的宽度是超出的宽度 除以二
+					
+					// 本次右网格边框宽度 = 本次右网格宽度 + 本次右网格宽度 - 本次左网格边框宽度
+					this_right_border_width = this_right_border_width + this_right_border_width - this_left_border_width; // 右网格加宽，增加的宽度是左网格缩小的宽度
+				}
+				
+				if (this_grid_width > WINDOW_WIDTH && this_grid_height > WINDOW_HEIGHT) { // 当前网格宽度与高度都超出屏幕范围，退出
+					break;
+				}
+				
+				// 设置本次网格的宽度、高度、上边距、右边距、下边距、左边距
+				div_obj.style.cssText = 'width: '+ this_grid_width +'px;height: '+ this_grid_height +'px;border-top-width: '+ this_top_bottom_border_width +'px;border-right-width: '+ this_right_border_width +'px;border-bottom-width: '+ this_top_bottom_border_width +'px;border-left-width: '+ this_left_border_width +'px;';
+				
+				// 将该网格加入到<body>标签中
+				document.body.appendChild(div_obj);
+				grid_width = grid_width + grid_gap_width + GRID_GAP_ADD_WIDTH_INIT; // 下一个网格宽度 = 当前网格宽度 + 网格宽度 + 网格间隙增加宽度
+				grid_gap_width = grid_gap_width + GRID_GAP_ADD_WIDTH_INIT; // 下一个网格间隙宽度 = 当前网格宽度 + 网格间隙增加宽度
+				
+			}
+		};
+		
+		/**
+		 * 初始化计算球体变大时，每次变化的宽度
+		 */
+		function initImgglobeToMaxChangeWidthArry() {
+			// 初始化数组容量 = ( 球体变化总时长 / 每次修改间隔时间 )
+			GLOBE_TO_MAX_CHANGE_WIDTH_ARRY = new Array(Math.ceil(GLOBE_CHANGE_TOTAL_TIME / GLOBE_CHANGE_TIME_INTERVAL));
+			
+			// 当前球体宽度
+			var this_globe_width = 1.5;
+			// 当前球体变化的宽度
+			var this_globe_change_width = 0;
+			// 运行时间
+			var run_time = 0;
+			
+			
+			var index = 0;
+			while (true) {
+				// 运行时间 = 运行时间 + 每次修改间隔时间
+				run_time = run_time + GLOBE_CHANGE_TIME_INTERVAL;
+				
+				// 球体变大时，每次变化的速度由慢到快，这样看的更舒服
+				// 当前球体变化的宽度 = (运行时间 ÷ (总时长 ÷ 2)) × 球体每次变化的宽度;
+				this_globe_change_width = run_time / (GLOBE_CHANGE_TOTAL_TIME / 2) * GLOBE_CHANGE_WIDTH;
+				
+				// 当前球体宽度 = 当前球体宽度 + 球体本次变化的宽度
+				this_globe_width = this_globe_width + this_globe_change_width;
+				
+				// 循环，直到当前球体宽度大于球体最大宽度
+				if (this_globe_width > GLOBE_MAX_WIDTH
+					|| index >= GLOBE_TO_MAX_CHANGE_WIDTH_ARRY.length) {
+					break;
+				}
+				
+				// 将当前球体宽度记录到球体变大时，每次变化的宽度（每次变化的宽度是使用了CSS的动态缩放功能，所以需要计算出当前球体宽度与最大球体宽度的比值。）
+				GLOBE_TO_MAX_CHANGE_WIDTH_ARRY[index++] = this_globe_width / GLOBE_MAX_WIDTH;
+			}
+		};
+		
+		/**
+		 * 球体变大
+		 */
+		function globeToMax() {
+			var index = 0;
+			INTERVAL_ID = window.setInterval(function () {
+				// 当前没有暂停
+				if (IS_STOP == false) {
+					// 当前球体宽度大于球体最大宽度时，改为将球体逐渐缩小
+					if (index >= GLOBE_TO_MAX_CHANGE_WIDTH_ARRY.length) {
+						// 清理循环定时器
+						window.clearInterval(INTERVAL_ID);
+						// 球体变小
+						globeToMin();
+					} else {
+						if (GLOBE_TO_MAX_CHANGE_WIDTH_ARRY[index] != null) {
+							// 修改球体宽度
+							GLOBE_OBJ.style.transform = "scale("+ GLOBE_TO_MAX_CHANGE_WIDTH_ARRY[index] +")";
+						} else {
+							// 如果没有记录球体宽度，就继续循环到找到为止。
+							do {
+								index++;
+								// 当前球体宽度大于球体最大宽度时，改为将球体逐渐缩小
+								if (index >= GLOBE_TO_MAX_CHANGE_WIDTH_ARRY.length) {
+									// 清理循环定时器
+									window.clearInterval(INTERVAL_ID);
+									// 球体变小
+									globeToMin();
+									break;
+								}
+							} while (GLOBE_TO_MAX_CHANGE_WIDTH_ARRY[index] == null)
+						}
+					}
+					index++;
+				}
+			}, GLOBE_CHANGE_TIME_INTERVAL); // 每次修改间隔时间
+		};
+		
+		/**
+		 * 球体变小
+		 */
+		function globeToMin() {
+			var index = GLOBE_TO_MAX_CHANGE_WIDTH_ARRY.length - 1;
+			INTERVAL_ID = window.setInterval(function () {
+				// 当前没有暂停
+				if (IS_STOP == false) {
+					if (index < 0) {
+						// 清理循环定时器
+						window.clearInterval(INTERVAL_ID);
+						// 球体变大
+						globeToMax();
+					} else {
+						if (GLOBE_TO_MAX_CHANGE_WIDTH_ARRY[index] != null) {
+							// 修改球体宽度
+							GLOBE_OBJ.style.transform = "scale("+ GLOBE_TO_MAX_CHANGE_WIDTH_ARRY[index] +")";
+						} else {
+							// 如果没有记录球体宽度，就继续循环到找到为止。
+							do {
+								index--;
+								if (index < 0) {
+									// 清理循环定时器
+									window.clearInterval(INTERVAL_ID);
+									// 球体变大
+									globeToMax();
+									break;
+								}
+							} while (GLOBE_TO_MAX_CHANGE_WIDTH_ARRY[index] == null)
+						}
+					}
+					index--;
+				}
+			}, GLOBE_CHANGE_TIME_INTERVAL); // 每次修改间隔时间.
+		};
+		
+		/**
+		 * 切换球体状态
+		 */
+		function switchGlobeStatus() {
+			if (IS_STOP) {
+				IS_STOP = false;
+			} else {
+				IS_STOP = true;
+			}
+		};
+	</script>
+</html>
